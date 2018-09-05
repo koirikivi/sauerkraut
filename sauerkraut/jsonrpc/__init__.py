@@ -62,6 +62,8 @@ class StandardJsonRpcSerializer(JsonRpcSerializer):
 
 
 def create_jsonrpc_client_factory(service_cls: T, service_url: str, *,
+                                  bases=(object,),
+                                  generated_class_name=None,
                                   request_client_factory: Type[JsonRpcRequestClient] = StandardJsonRpcRequestClient,
                                   serialize_factory: Type[JsonRpcSerializer] = StandardJsonRpcSerializer) -> T:
     service_config = get_service_config(service_cls)
@@ -93,11 +95,9 @@ def create_jsonrpc_client_factory(service_cls: T, service_url: str, *,
         method_func.__name__ = method_config.name
         method_map[method_config.name] = method_func
 
-    # TODO: if service_cls is an interface, we could have it as a base to please isinstance etc
-    cls_name = f'{service_config.name}JsonRpcClient'
-    bases = (object,)
-    return type(cls_name, bases, method_map)
-
+    if generated_class_name is None:
+        generated_class_name = f'{service_config.name}JsonRpcClient'
+    return type(generated_class_name, bases, method_map)
 
 
 # TODO: the server part is very much todo. We should abstract out the backend stuff
