@@ -72,6 +72,7 @@ def create_jsonrpc_client_factory(service_cls: T, service_url: str, *,
         self._request_client = request_client_factory()
         self._serializer = serialize_factory()
 
+    update_wrapper(__init__, service_cls.__init__)  # TODO: not sure if necessary
     method_map = {'__init__': __init__}
 
     for method_config in service_config.method_configs:
